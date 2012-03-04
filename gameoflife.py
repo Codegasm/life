@@ -9,17 +9,32 @@ class App:
   CELL_SIZE = 10
   GRID_WIDTH = 50
   GRID_HEIGHT = 50
+
   running = False
+  generation = 0
 
   def __init__(self, master):
     self.frame = Frame(master)
     self.frame.pack()
 
-    self.start_button = Button(self.frame, text="Start", command=self.toggle)
-    self.start_button.pack(side=TOP)
+    self.top_frame = Frame(self.frame)
+    self.grid_frame = Frame(self.frame)
+
+    self.top_frame.pack(side="top", fill="x")
+    self.grid_frame.pack(side="bottom", fill="both", expand=True)
+
+    self.start_button = Button(self.top_frame, text="Start", command=self.toggle)
+    self.start_button.grid(column=0, row=0)
+    self.reset_button = Button(self.top_frame, text="Reset", command=self.reset)
+    self.reset_button.grid(column=1, row=0)
+
+    self.generation_string = StringVar()
+    self.generation_counter = Label(self.top_frame, textvariable=self.generation_string)
+    self.generation_counter.grid(column=2, row=0)
+    self.update_generation()
     
-    self.canvas = Canvas(self.frame, width=App.CELL_SIZE * App.GRID_WIDTH, height=App.CELL_SIZE * App.GRID_HEIGHT)
-    self.canvas.pack()
+    self.canvas = Canvas(self.grid_frame, width=App.CELL_SIZE * App.GRID_WIDTH, height=App.CELL_SIZE * App.GRID_HEIGHT)
+    self.canvas.grid(column=0, row=1)
     self.canvas.bind('<Button-1>', self.on_canvas_click)
 
     self.grid = LifeGrid(self.GRID_WIDTH, self.GRID_HEIGHT)
@@ -43,10 +58,18 @@ class App:
       self.start_button.config(text="Stop")
       self.do_step()
 
+  def reset(self):
+    self.grid.reset()
+    self.generation = 0
+    self.draw_grid()
+    self.update_generation()
+
   def do_step(self):
     if self.running:
       self.grid.step()
+      self.generation += 1
       self.draw_grid()
+      self.update_generation()
       self.frame.after(1000, self.do_step)
 
   def on_canvas_click(self, event):
@@ -56,6 +79,9 @@ class App:
 
       self.grid.matrix[y][x] = not self.grid.matrix[y][x]
       self.draw_grid()
+
+  def update_generation(self):
+    self.generation_string.set("Generation: {0}".format(self.generation))
 
 root = Tk()
 app = App(root)

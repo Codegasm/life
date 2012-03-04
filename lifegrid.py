@@ -5,7 +5,7 @@ class LifeGrid:
   def __init__(self, width, height):
     self.width = width
     self.height = height
-    self.matrix = [[0 for col in range(height)] for row in range(width)]
+    self.reset()
 
   def count_neighbors(self, x, y):
     neighbors = 0
@@ -34,4 +34,7 @@ class LifeGrid:
           nextGen[y][x] = 1
     
     self.matrix = nextGen
+
+  def reset(self):
+    self.matrix = [[0 for col in range(self.height)] for row in range(self.width)]
 
