@@ -14,6 +14,7 @@ class App:
   generation = 0
 
   def __init__(self, master):
+    master.wm_title('Game of life')
     self.frame = Frame(master)
     self.frame.pack()
 
